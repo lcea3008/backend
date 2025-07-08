@@ -6,7 +6,7 @@ import { withCors, handleOptions } from "@/lib/cors"
 export const OPTIONS = handleOptions
 
 export const POST = withCors(async (req: NextRequest) => {
-  const { email, password, role } = await req.json()
+  const { email, password, role = "USER" } = await req.json()
   const userExists = await prisma.user.findUnique({ where: { email } })
 
   if (userExists)
@@ -14,7 +14,7 @@ export const POST = withCors(async (req: NextRequest) => {
 
   const hashedPassword = await bcrypt.hash(password, 10)
   const user = await prisma.user.create({
-    data: { email, password: hashedPassword, role },
+    data: { email, password: hashedPassword, role: role || "USER" },
   })
 
   return NextResponse.json({ id: user.id, email: user.email })

@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import { NextRequest } from "next/server"
 
 interface UserPayload {
-  userId: string
+  userId: number  // Cambiado de string a number
   role: string
 }
 

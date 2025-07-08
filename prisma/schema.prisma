@@ -14,29 +14,29 @@ datasource db {
 }
 
 model User {
-  id       String   @id @default(uuid())
-  email    String   @unique
-  password String
-  role     String
+  id       Int      @id @default(autoincrement())
+  email    String   @unique @db.NVarChar(100)
+  password String   @db.NVarChar(200)
+  role     String   @db.NVarChar(20)
 
   @@map("Users")
 }
 
 model Objetivo {
-  id          String     @id @default(uuid())
-  title       String
-  perspectiva String
+  id          Int         @id @default(autoincrement())
+  title       String      @db.NVarChar(100)
+  perspectiva String      @db.NVarChar(50)
   indicadores Indicador[]
 
   @@map("Objetivos")
 }
 
 model Indicador {
-  id         String   @id @default(uuid())
-  nombre     String
+  id         Int      @id @default(autoincrement())
+  nombre     String   @db.NVarChar(100)
   meta       Float
-  unidad     String
-  objetivoId String
+  unidad     String   @db.NVarChar(20)
+  objetivoId Int
   objetivo   Objetivo @relation(fields: [objetivoId], references: [id])
 
   @@map("Indicadores")

@@ -31,9 +31,12 @@ export const PUT = withCors(async (req: NextRequest) => {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 })
 
   const url = new URL(req.url)
-  const id = url.searchParams.get("id")
+  const idParam = url.searchParams.get("id")
   
-  if (!id) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
+  if (!idParam) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
+
+  const id = parseInt(idParam, 10)
+  if (isNaN(id)) return NextResponse.json({ error: "ID debe ser un número válido" }, { status: 400 })
 
   const data = await req.json()
   const actualizado = await prisma.indicador.update({
@@ -49,9 +52,12 @@ export const DELETE = withCors(async (req: NextRequest) => {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 })
 
   const url = new URL(req.url)
-  const id = url.searchParams.get("id")
+  const idParam = url.searchParams.get("id")
   
-  if (!id) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
+  if (!idParam) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
+
+  const id = parseInt(idParam, 10)
+  if (isNaN(id)) return NextResponse.json({ error: "ID debe ser un número válido" }, { status: 400 })
 
   await prisma.indicador.delete({ where: { id } })
   return NextResponse.json({ message: "Indicador eliminado" })
