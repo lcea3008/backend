@@ -1,65 +1,65 @@
-import { prisma } from "@/lib/prisma"
-import { getUserFromRequest } from "@/lib/auth"
-import { NextRequest, NextResponse } from "next/server"
-import { withCors, handleOptions } from "@/lib/cors"
+// import { prisma } from "@/lib/prisma"
+// import { getUserFromRequest } from "@/lib/auth"
+// import { NextRequest, NextResponse } from "next/server"
+// import { withCors, handleOptions } from "@/lib/cors"
 
-export const OPTIONS = handleOptions
+// export const OPTIONS = handleOptions
 
-export const GET = withCors(async (req: NextRequest) => {
-  const user = getUserFromRequest(req)
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+// export const GET = withCors(async (req: NextRequest) => {
+//   const user = getUserFromRequest(req)
+//   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
-  const objetivos = await prisma.objetivo.findMany({
-    include: { indicadores: true }
-  })
+//   const objetivos = await prisma.objetivo.findMany({
+//     include: { indicadores: true }
+//   })
 
-  return NextResponse.json(objetivos)
-})
+//   return NextResponse.json(objetivos)
+// })
 
-export const POST = withCors(async (req: NextRequest) => {
-  const user = getUserFromRequest(req)
-  if (!user || user.role !== "ADMIN")
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 })
+// export const POST = withCors(async (req: NextRequest) => {
+//   const user = getUserFromRequest(req)
+//   if (!user || user.role !== "ADMIN")
+//     return NextResponse.json({ error: "No autorizado" }, { status: 403 })
 
-  const data = await req.json()
-  const nuevo = await prisma.objetivo.create({ data })
-  return NextResponse.json(nuevo)
-})
+//   const data = await req.json()
+//   const nuevo = await prisma.objetivo.create({ data })
+//   return NextResponse.json(nuevo)
+// })
 
-export const PUT = withCors(async (req: NextRequest) => {
-  const user = getUserFromRequest(req)
-  if (!user || user.role !== "ADMIN")
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 })
+// export const PUT = withCors(async (req: NextRequest) => {
+//   const user = getUserFromRequest(req)
+//   if (!user || user.role !== "ADMIN")
+//     return NextResponse.json({ error: "No autorizado" }, { status: 403 })
 
-  const url = new URL(req.url)
-  const idParam = url.searchParams.get("id")
+//   const url = new URL(req.url)
+//   const idParam = url.searchParams.get("id")
   
-  if (!idParam) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
+//   if (!idParam) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
 
-  const id = parseInt(idParam, 10)
-  if (isNaN(id)) return NextResponse.json({ error: "ID debe ser un número válido" }, { status: 400 })
+//   const id = parseInt(idParam, 10)
+//   if (isNaN(id)) return NextResponse.json({ error: "ID debe ser un número válido" }, { status: 400 })
 
-  const data = await req.json()
-  const actualizado = await prisma.objetivo.update({
-    where: { id },
-    data
-  })
-  return NextResponse.json(actualizado)
-})
+//   const data = await req.json()
+//   const actualizado = await prisma.objetivo.update({
+//     where: { id },
+//     data
+//   })
+//   return NextResponse.json(actualizado)
+// })
 
-export const DELETE = withCors(async (req: NextRequest) => {
-  const user = getUserFromRequest(req)
-  if (!user || user.role !== "ADMIN")
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 })
+// export const DELETE = withCors(async (req: NextRequest) => {
+//   const user = getUserFromRequest(req)
+//   if (!user || user.role !== "ADMIN")
+//     return NextResponse.json({ error: "No autorizado" }, { status: 403 })
 
-  const url = new URL(req.url)
-  const idParam = url.searchParams.get("id")
+//   const url = new URL(req.url)
+//   const idParam = url.searchParams.get("id")
   
-  if (!idParam) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
+//   if (!idParam) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
 
-  const id = parseInt(idParam, 10)
-  if (isNaN(id)) return NextResponse.json({ error: "ID debe ser un número válido" }, { status: 400 })
+//   const id = parseInt(idParam, 10)
+//   if (isNaN(id)) return NextResponse.json({ error: "ID debe ser un número válido" }, { status: 400 })
 
-  await prisma.objetivo.delete({ where: { id } })
-  return NextResponse.json({ message: "Objetivo eliminado" })
-})
+//   await prisma.objetivo.delete({ where: { id } })
+//   return NextResponse.json({ message: "Objetivo eliminado" })
+// })

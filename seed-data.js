@@ -18,6 +18,7 @@ async function seedData() {
         const user1 = await prisma.user.create({
             data: {
                 email: 'admin@test.com',
+                nombre:'La prueba',
                 password: hashedPassword,
                 role: 'admin'
             }
@@ -26,6 +27,7 @@ async function seedData() {
         const user2 = await prisma.user.create({
             data: {
                 email: 'user@test.com',
+                nombre: 'la prueba2',
                 password: hashedPassword,
                 role: 'user'
             }

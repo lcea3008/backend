@@ -26,7 +26,16 @@ export const POST = withCors(async (req: NextRequest) => {
     }
 
     const token = signToken({ userId: user.id, role: user.role })
-    return NextResponse.json({ token })
+    return NextResponse.json({ 
+      message: "Login exitoso",
+      token, 
+      user: {
+        id: user.id,
+        nombre: user.nombre,
+        email: user.email, 
+        role: user.role
+      }
+    })
   } catch (error) {
     console.error("Error en login:", error)
     const errorMessage = error instanceof Error ? error.message : String(error)

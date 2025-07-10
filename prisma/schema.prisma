@@ -1,11 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -14,32 +9,87 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique @db.NVarChar(100)
-  password String   @db.NVarChar(200)
-  role     String   @db.NVarChar(20)
+  id       Int         @id @default(autoincrement())
+  nombre   String      @db.NVarChar(100)
+  email    String      @unique @db.NVarChar(100)
+  password String      @db.NVarChar(200)
+  role     String      @db.NVarChar(20)
+  
+  // Relación: Un usuario puede ser responsable de múltiples iniciativas
+  iniciativasResponsable Iniciativa[] @relation("Responsable")
 
   @@map("Users")
 }
 
-model Objetivo {
+model Perspectiva {
   id          Int         @id @default(autoincrement())
-  title       String      @db.NVarChar(100)
-  perspectiva String      @db.NVarChar(50)
-  indicadores Indicador[]
+  nombre      String      @unique @db.NVarChar(100)
+  descripcion String      @db.NVarChar(250)
+  
+  // Relación: Una perspectiva puede tener múltiples objetivos
+  objetivos   Objetivo[]
+
+  @@map("Perspectivas")
+}
+
+model Objetivo {
+  id             Int        @id @default(autoincrement())
+  titulo         String     @db.NVarChar(150)
+  perspectiva_id Int
+  
+  // Relación: Un objetivo pertenece a una perspectiva
+  perspectiva    Perspectiva @relation(fields: [perspectiva_id], references: [id])
+  // Relación: Un objetivo puede tener múltiples KPIs
+  kpis           KPI[]
 
   @@map("Objetivos")
 }
 
-model Indicador {
-  id         Int      @id @default(autoincrement())
-  nombre     String   @db.NVarChar(100)
-  meta       Float
-  unidad     String   @db.NVarChar(20)
-  objetivoId Int
-  objetivo   Objetivo @relation(fields: [objetivoId], references: [id])
+model KPI {
+  id                 Int              @id @default(autoincrement())
+  nombre             String           @db.NVarChar(200)
+  meta               Decimal          @db.Decimal(10, 2)
+  unidad             String?          @db.NVarChar(20)
+  objetivo_id        Int
+  estado_actual      Decimal?         @db.Decimal(10, 2)
+  fecha_actualizacion DateTime?       @default(dbgenerated("getdate()")) @db.Date
+  
+  // Relación: Un KPI pertenece a un objetivo
+  objetivo           Objetivo         @relation(fields: [objetivo_id], references: [id])
+  // Relación: Un KPI puede tener múltiples iniciativas
+  iniciativas        Iniciativa[]
+  // Relación: Un KPI puede tener múltiples registros históricos
+  historicos         RegistroHistorico[]
 
-  @@map("Indicadores")
+  @@map("KPIs")
 }
 
+model Iniciativa {
+  id             Int       @id @default(autoincrement())
+  nombre         String    @db.NVarChar(200)
+  descripcion    String?   @db.NVarChar(Max)
+  kpi_id         Int
+  fecha_inicio   DateTime? @db.Date
+  fecha_fin      DateTime? @db.Date
+  responsable_id Int?
+  progreso       Int?
+  
+  // Relación: Una iniciativa pertenece a un KPI
+  kpi            KPI       @relation(fields: [kpi_id], references: [id])
+  // Relación: Una iniciativa puede tener un responsable (usuario)
+  responsable    User?     @relation("Responsable", fields: [responsable_id], references: [id])
 
+  @@map("Iniciativas")
+}
+
+model RegistroHistorico {
+  id     Int      @id @default(autoincrement())
+  kpi_id Int
+  valor  Decimal  @db.Decimal(10, 2)
+  fecha  DateTime @default(dbgenerated("getdate()")) @db.Date
+  
+  // Relación: Un registro histórico pertenece a un KPI
+  kpi    KPI      @relation(fields: [kpi_id], references: [id])
+
+  @@map("RegistrosHistoricos")
+}
