@@ -1,65 +1,57 @@
-// import { prisma } from "@/lib/prisma"
-// import { getUserFromRequest } from "@/lib/auth"
-// import { NextRequest, NextResponse } from "next/server"
-// import { withCors, handleOptions } from "@/lib/cors"
+//api/objectivos
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
-// export const OPTIONS = handleOptions
+//Get: Obtener todos los objetivos
+export async function GET() {
+  try {
+    console.log('🔍 [API] Iniciando GET /api/objectivos...')
+    
+    const objetivos = await prisma.objetivo.findMany()
 
-// export const GET = withCors(async (req: NextRequest) => {
-//   const user = getUserFromRequest(req)
-//   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    console.log(`✅ [API] Encontrados ${objetivos.length} objetivos`)
 
-//   const objetivos = await prisma.objetivo.findMany({
-//     include: { indicadores: true }
-//   })
+    return NextResponse.json(objetivos)
+  } catch (error) {
+    console.error('❌ [API] Error en GET /api/objectivos:', error)
+    console.error('Detalles del error:', {
+      message: error instanceof Error ? error.message : 'Error desconocido',
+      stack: error instanceof Error ? error.stack : 'Sin traza de pila',
+      name: error instanceof Error ? error.name : 'Desconocido'
+    })
+    return NextResponse.json({ error: 'Error al obtener objetivos',
+        details: error instanceof Error ? error.message : 'Error desconocido'
+    }, { status: 500 })
+  }
+}
 
-//   return NextResponse.json(objetivos)
-// })
+// POST: Insertar un nuevo objetivo
+export async function POST(req: Request) {
+  try{
+    console.log('🔍 [API] Iniciando POST /api/objectivos...')
+    const body = await req.json()
+    const {nombre: titulo, perspectivaId: perspectiva_id} = body
 
-// export const POST = withCors(async (req: NextRequest) => {
-//   const user = getUserFromRequest(req)
-//   if (!user || user.role !== "ADMIN")
-//     return NextResponse.json({ error: "No autorizado" }, { status: 403 })
+    console.log('📝 [API] Datos recibidos:', { nombre: titulo, perspectivaId: perspectiva_id   })
+    if (!titulo || !perspectiva_id) {
+      console.log('❌ [API] Validación fallida: campos requeridos faltantes')
+      return NextResponse.json({ error: 'Nombre y perspectivaId son requeridos' }, { status: 400 })
+    }
+    const nuevoObjetivo = await prisma.objetivo.create({
+        data: { titulo, perspectiva_id }
+    })
+    console.log('✅ [API] Objetivo creado:', nuevoObjetivo)
+    return NextResponse.json(nuevoObjetivo, { status: 201 })
 
-//   const data = await req.json()
-//   const nuevo = await prisma.objetivo.create({ data })
-//   return NextResponse.json(nuevo)
-// })
-
-// export const PUT = withCors(async (req: NextRequest) => {
-//   const user = getUserFromRequest(req)
-//   if (!user || user.role !== "ADMIN")
-//     return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-
-//   const url = new URL(req.url)
-//   const idParam = url.searchParams.get("id")
-  
-//   if (!idParam) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
-
-//   const id = parseInt(idParam, 10)
-//   if (isNaN(id)) return NextResponse.json({ error: "ID debe ser un número válido" }, { status: 400 })
-
-//   const data = await req.json()
-//   const actualizado = await prisma.objetivo.update({
-//     where: { id },
-//     data
-//   })
-//   return NextResponse.json(actualizado)
-// })
-
-// export const DELETE = withCors(async (req: NextRequest) => {
-//   const user = getUserFromRequest(req)
-//   if (!user || user.role !== "ADMIN")
-//     return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-
-//   const url = new URL(req.url)
-//   const idParam = url.searchParams.get("id")
-  
-//   if (!idParam) return NextResponse.json({ error: "ID requerido" }, { status: 400 })
-
-//   const id = parseInt(idParam, 10)
-//   if (isNaN(id)) return NextResponse.json({ error: "ID debe ser un número válido" }, { status: 400 })
-
-//   await prisma.objetivo.delete({ where: { id } })
-//   return NextResponse.json({ message: "Objetivo eliminado" })
-// })
+  } catch (error) {
+    console.error('❌ [API] Error en POST /api/objectivos:', error)
+    console.error('Detalles del error:', {
+      message: error instanceof Error ? error.message : 'Error desconocido',
+      stack: error instanceof Error ? error.stack : 'Sin traza de pila',
+      name: error instanceof Error ? error.name : 'Desconocido'
+    })
+    return NextResponse.json({ error: 'Error al crear objetivo',
+        details: error instanceof Error ? error.message : 'Error desconocido'
+    }, { status: 500 })
+  }
+}

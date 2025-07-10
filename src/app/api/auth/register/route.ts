@@ -17,5 +17,5 @@ export const POST = withCors(async (req: NextRequest) => {
     data: { nombre, email, password: hashedPassword, role: role || "USER" },
   })
 
-  return NextResponse.json({ id: user.id, email: user.email })
+  return NextResponse.json({ id: user.id, nombre: user.nombre, email: user.email })
 })
