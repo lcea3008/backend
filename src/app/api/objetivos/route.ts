@@ -1,19 +1,32 @@
-//api/objectivos
+//api/objetivos
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 //Get: Obtener todos los objetivos
 export async function GET() {
   try {
-    console.log('🔍 [API] Iniciando GET /api/objectivos...')
+    console.log('🔍 [API] Iniciando GET /api/objetivos...')
     
-    const objetivos = await prisma.objetivo.findMany()
+    const objetivos = await prisma.objetivo.findMany({
+      include: {
+        perspectiva: {
+          select: {
+            id: true,
+            nombre: true,
+            descripcion: true
+          }
+        }
+      },
+      orderBy: {
+        id: 'asc'
+      }
+    })
 
     console.log(`✅ [API] Encontrados ${objetivos.length} objetivos`)
 
     return NextResponse.json(objetivos)
   } catch (error) {
-    console.error('❌ [API] Error en GET /api/objectivos:', error)
+    console.error('❌ [API] Error en GET /api/objetivos:', error)
     console.error('Detalles del error:', {
       message: error instanceof Error ? error.message : 'Error desconocido',
       stack: error instanceof Error ? error.stack : 'Sin traza de pila',
@@ -28,7 +41,7 @@ export async function GET() {
 // POST: Insertar un nuevo objetivo
 export async function POST(req: Request) {
   try{
-    console.log('🔍 [API] Iniciando POST /api/objectivos...')
+    console.log('🔍 [API] Iniciando POST /api/objetivos...')
     const body = await req.json()
     const {nombre: titulo, perspectivaId: perspectiva_id} = body
 
@@ -44,7 +57,7 @@ export async function POST(req: Request) {
     return NextResponse.json(nuevoObjetivo, { status: 201 })
 
   } catch (error) {
-    console.error('❌ [API] Error en POST /api/objectivos:', error)
+    console.error('❌ [API] Error en POST /api/objetivos:', error)
     console.error('Detalles del error:', {
       message: error instanceof Error ? error.message : 'Error desconocido',
       stack: error instanceof Error ? error.stack : 'Sin traza de pila',
