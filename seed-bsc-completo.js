@@ -45,7 +45,7 @@ async function seedBSCData() {
                 nombre: 'Analista de Datos',
                 email: 'analista@bsc.com',
                 password: hashedPassword,
-                role: 'Analista'
+                role: 'Supervisor'
             }
         });
         

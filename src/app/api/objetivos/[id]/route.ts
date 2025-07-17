@@ -73,7 +73,7 @@ export async function PUT(
         }
 
         const body = await req.json();
-        const { titulo, perspectiva_id } = body;
+        const { nombre: titulo, perspectivaId: perspectiva_id } = body;
 
         console.log('📝 [API] Datos recibidos:', { id, titulo, perspectiva_id });
 
